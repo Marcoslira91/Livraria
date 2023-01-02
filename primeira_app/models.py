@@ -71,13 +71,44 @@ class Cliente(models.Model):
     )
 
     nome = models.CharField("Nome Completo", max_length=200)
-    data_nascimento = models.DateField('Data nascimento', blank=True, null=True)
-    cpf = models.CharField('CPF', max_length=120, null=True)
-    sexo = models.CharField('Sexo', max_length=1, choices=SEXO_CHOICES)
-    estado_civil = models.CharField('Estado civil', max_length=1, choices=ESTADO_CIVIL_CHOICES)
+    data_nascimento = models.DateField("Data nascimento", blank=True, null=True)
+    cpf = models.CharField("CPF", max_length=120, null=True)
+    sexo = models.CharField("Sexo", max_length=1, choices=SEXO_CHOICES)
+    estado_civil = models.CharField("Estado civil", max_length=1, choices=ESTADO_CIVIL_CHOICES)
     endereco = models.ForeignKey(Endereco, on_delete=models.CASCADE, verbose_name="Endereco", blank=True, null=True)
     email = models.EmailField("Email", blank=True, null=True)
-    telefone = models.CharField('Nº telefone celular', max_length=11, blank=True, null=True)
+    telefone = models.CharField("Nº telefone celular", max_length=11, blank=True, null=True)
 
     def __str__(self):
         return self.nome
+
+
+class Shop(models.Model):
+    nome_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name="Nome do Cliente", blank=True, null=True)
+
+    class Meta:
+        ordering = ("-pk",)
+        verbose_name = "compra"
+        verbose_name_plural = "compras"
+
+    def __str__(self):
+        return self.nome_cliente
+
+
+class Carrinho(models.Model):
+    shop = models.ForeignKey(Shop, related_name="Compras", on_delete=models.CASCADE)
+    produto = models.ForeignKey( Livro, related_name="Produto", on_delete=models.SET_NULL, null=True, blank=True)
+    quantidade = models.PositiveIntegerField("Quantidade")
+
+    class Meta:
+        ordering = ("-pk",)
+        verbose_name = "carrinho"
+        verbose_name_plural = "carrinhos"
+
+    def __str__(self):
+        if self.shop:
+            return f'{self.shop.pk}-{self.pk}-{self.produto}'
+        return str(self.pk)
+
+    def get_subtotal(self):
+        return self.preco * (self.quantidade or 0)

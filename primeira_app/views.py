@@ -58,28 +58,6 @@ def shopping_items_add(request):
     
     return render(request, "primeira_app/carrinho_form.html", dados)
 
-# def shopping_items_add(request):
-#     request = request.POST
-#     cliente = request.get("Cliente")
-#     produtos = request.get("Produtos")
-
-#     shop = Shop.objects.create(cliente=cliente)
-
-#     for produtos in produtos:
-#         product_obj = Product.objects.get(pk=product['pk'])
-#         quantidade = product_obj['quantidade']
-#         preco = product_obj['preco']
-
-#         Cart.objects.create(
-#             shop=shop,
-#             product=product_obj,
-#             quantity=quantidade,
-#             price=preco
-#         )
-#     response = {'data': shop.pk}
-#     return JsonResponse(response)
-
-
 def cart_items(request, pk):
     template_name = 'cart_items.html'
     carts = Cart.objects.filter(shop=pk)
